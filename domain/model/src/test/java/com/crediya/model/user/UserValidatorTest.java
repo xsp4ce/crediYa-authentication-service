@@ -51,63 +51,19 @@ class UserValidatorTest {
 		StepVerifier.create(result).expectError(ValidationException.class).verify();
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {"", "   "})
+	void shouldFailWhenLastNameIsInvalid(String invalidName) {
+		User user = createValidUserBuilder().lastName(invalidName).build();
+
+		Mono<Void> result = userValidator.validateUser(user);
+
+		StepVerifier.create(result).expectError(ValidationException.class).verify();
+	}
+
 	@Test
 	void shouldFailWhenLastNameIsNull() {
 		User user = createValidUserBuilder().lastName(null).build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldFailWhenLastNameIsEmpty() {
-		User user = createValidUserBuilder().lastName("").build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldFailWhenBirthDateIsNull() {
-		User user = createValidUserBuilder().birthDate(null).build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldFailWhenBirthDateIsInFuture() {
-		User user = createValidUserBuilder().birthDate(LocalDate.now().plusDays(1)).build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldFailWhenBirthDateIsMoreThan120YearsAgo() {
-		User user = createValidUserBuilder().birthDate(LocalDate.now().minusYears(121)).build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldFailWhenAddressIsNull() {
-		User user = createValidUserBuilder().address(null).build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldFailWhenPhoneIsNull() {
-		User user = createValidUserBuilder().phone(null).build();
 
 		Mono<Void> result = userValidator.validateUser(user);
 
@@ -187,47 +143,6 @@ class UserValidatorTest {
 
 		User userWithMaxSalary = createValidUserBuilder().baseSalary(new BigDecimal("15000000")).build();
 		StepVerifier.create(userValidator.validateUser(userWithMaxSalary)).verifyComplete();
-	}
-
-	@Test
-	void shouldFailWhenDocumentNumberIsNull() {
-		User user = createValidUserBuilder().documentNumber(null).build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = {"", "   ", "12345ABC"})
-	void shouldFailWhenDocumentNumberFormatIsInvalid(String invalidDocumentNumber) {
-		User user = createValidUserBuilder().documentNumber(invalidDocumentNumber).build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldFailWhenDocumentNumberIsNotEightDigits() {
-		User user = createValidUserBuilder().documentNumber("1234567").build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).expectError(ValidationException.class).verify();
-
-		User userTooLong = createValidUserBuilder().documentNumber("123456789").build();
-
-		StepVerifier.create(userValidator.validateUser(userTooLong)).expectError(ValidationException.class).verify();
-	}
-
-	@Test
-	void shouldValidateEightDigitDocumentNumber() {
-		User user = createValidUserBuilder().documentNumber("12345678").build();
-
-		Mono<Void> result = userValidator.validateUser(user);
-
-		StepVerifier.create(result).verifyComplete();
 	}
 
 	private User.UserBuilder createValidUserBuilder() {

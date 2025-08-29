@@ -1,6 +1,8 @@
 package com.crediya.r2dbc;
 
 import com.crediya.model.user.User;
+import com.crediya.model.user.constants.ValidationMessages;
+import com.crediya.model.user.exceptions.ExceptionMessages;
 import com.crediya.r2dbc.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,7 +58,7 @@ class UserRepositoryAdapterTest {
 		UserEntity userEntity = createUserEntity();
 
 		when(mapper.map(user, UserEntity.class)).thenReturn(userEntity);
-		when(repository.save(userEntity)).thenReturn(Mono.error(new RuntimeException("Database error")));
+		when(repository.save(userEntity)).thenReturn(Mono.error(new RuntimeException(ExceptionMessages.DATABASE_ERROR)));
 
 		Mono<User> result = repositoryAdapter.save(user);
 
@@ -94,7 +96,7 @@ class UserRepositoryAdapterTest {
 	@Test
 	void shouldReturnErrorWhenExistsByEmailFails() {
 		String email = "test@example.com";
-		when(repository.existsByEmail(email)).thenReturn(Mono.error(new RuntimeException("Database connection error")));
+		when(repository.existsByEmail(email)).thenReturn(Mono.error(new RuntimeException(ExceptionMessages.DATABASE_ERROR)));
 
 		Mono<Boolean> result = repositoryAdapter.existsByEmail(email);
 
@@ -102,43 +104,8 @@ class UserRepositoryAdapterTest {
 	}
 
 	@Test
-	void shouldCheckIfDocumentNumberExists() {
-		String documentNumber = "12345678";
-		when(repository.existsByDocumentNumber(documentNumber)).thenReturn(Mono.just(true));
-
-		Mono<Boolean> result = repositoryAdapter.existsByDocumentNumber(documentNumber);
-
-		StepVerifier.create(result).expectNext(true).verifyComplete();
-
-		verify(repository).existsByDocumentNumber(documentNumber);
-	}
-
-	@Test
-	void shouldCheckIfDocumentNumberDoesNotExist() {
-		String documentNumber = "87654321";
-		when(repository.existsByDocumentNumber(documentNumber)).thenReturn(Mono.just(false));
-
-		Mono<Boolean> result = repositoryAdapter.existsByDocumentNumber(documentNumber);
-
-		StepVerifier.create(result).expectNext(false).verifyComplete();
-
-		verify(repository).existsByDocumentNumber(documentNumber);
-	}
-
-	@Test
-	void shouldReturnErrorWhenExistsByDocumentNumberFails() {
-		String documentNumber = "12345678";
-		when(repository.existsByDocumentNumber(documentNumber)).thenReturn(Mono.error(new RuntimeException(
-		 "Database " + "connection error")));
-
-		Mono<Boolean> result = repositoryAdapter.existsByDocumentNumber(documentNumber);
-
-		StepVerifier.create(result).expectError(RuntimeException.class).verify();
-	}
-
-	@Test
 	void shouldHandleNullEmailInExistsCheck() {
-		when(repository.existsByEmail(null)).thenReturn(Mono.error(new IllegalArgumentException("Email cannot be null")));
+		when(repository.existsByEmail(null)).thenReturn(Mono.error(new IllegalArgumentException(ValidationMessages.EMAIL_CANNOT_BE_NULL)));
 
 		Mono<Boolean> result = repositoryAdapter.existsByEmail(null);
 

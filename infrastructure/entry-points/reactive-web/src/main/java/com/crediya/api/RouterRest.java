@@ -1,6 +1,6 @@
 package com.crediya.api;
 
-import com.crediya.api.config.UserPaths;
+import com.crediya.api.constants.UserPaths;
 import com.crediya.api.dto.SaveUserDTO;
 import com.crediya.api.exception.CustomErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +25,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 @RequiredArgsConstructor
 public class RouterRest {
-	private final UserPaths userPaths;
-
 	@Bean
 	@RouterOperations({
 	 @RouterOperation(path = "/api/v1/users", method = RequestMethod.POST, operation = @Operation(operationId =
@@ -53,10 +51,10 @@ public class RouterRest {
 		@ExampleObject(name = "Validation Error", value = """
 		 	{
 		 		"code": "VALIDATION_ERROR",
-		 		"message": "Email is already registered"
+		 		"message": "Field is already registered"
 		 	}
 		 """)))}))})
 	public RouterFunction<ServerResponse> routerFunction(Handler handler) {
-		return route(POST(userPaths.getUser()), handler::listenSaveUser);
+		return route(POST(UserPaths.USERS), handler::listenSaveUser);
 	}
 }
