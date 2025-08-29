@@ -2,6 +2,8 @@ package com.crediya.usecase.user;
 
 import com.crediya.model.user.User;
 import com.crediya.model.user.UserValidator;
+import com.crediya.model.user.constants.ValidationMessages;
+import com.crediya.model.user.exceptions.ExceptionMessages;
 import com.crediya.model.user.exceptions.ValidationException;
 import com.crediya.model.user.gateways.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,6 @@ class UserUseCaseTest {
 
 		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.empty());
 		when(userRepository.existsByEmail(anyString())).thenReturn(Mono.just(false));
-		when(userRepository.existsByDocumentNumber(anyString())).thenReturn(Mono.just(false));
 		when(userRepository.save(any(User.class))).thenReturn(Mono.just(savedUser));
 
 		Mono<User> result = userUseCase.save(user);
@@ -50,7 +51,7 @@ class UserUseCaseTest {
 	void shouldFailWhenValidationFails() {
 		User user = createValidUser();
 
-		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.error(new ValidationException("Name is required")));
+		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.error(new ValidationException(ValidationMessages.NAME_REQUIRED)));
 
 		Mono<User> result = userUseCase.save(user);
 
@@ -63,26 +64,11 @@ class UserUseCaseTest {
 
 		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.empty());
 		when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
-		when(userRepository.existsByDocumentNumber(anyString())).thenReturn(Mono.just(false));
 
 		Mono<User> result = userUseCase.save(user);
 
 		StepVerifier.create(result).expectErrorMatches(throwable -> throwable instanceof ValidationException &&
-		 throwable.getMessage().equals("Email is already registered")).verify();
-	}
-
-	@Test
-	void shouldFailWhenDocumentNumberAlreadyExists() {
-		User user = createValidUser();
-
-		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.empty());
-		when(userRepository.existsByEmail(anyString())).thenReturn(Mono.just(false));
-		when(userRepository.existsByDocumentNumber(user.getDocumentNumber())).thenReturn(Mono.just(true));
-
-		Mono<User> result = userUseCase.save(user);
-
-		StepVerifier.create(result).expectErrorMatches(throwable -> throwable instanceof ValidationException &&
-		 throwable.getMessage().equals("Document number is already registered")).verify();
+		 throwable.getMessage().equals(ValidationMessages.EMAIL_ALREADY_REGISTERED)).verify();
 	}
 
 	@Test
@@ -91,8 +77,7 @@ class UserUseCaseTest {
 
 		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.empty());
 		when(userRepository.existsByEmail(anyString())).thenReturn(Mono.just(false));
-		when(userRepository.existsByDocumentNumber(anyString())).thenReturn(Mono.just(false));
-		when(userRepository.save(any(User.class))).thenReturn(Mono.error(new RuntimeException("Database error")));
+		when(userRepository.save(any(User.class))).thenReturn(Mono.error(new RuntimeException(ExceptionMessages.DATABASE_ERROR)));
 
 		Mono<User> result = userUseCase.save(user);
 
@@ -104,8 +89,7 @@ class UserUseCaseTest {
 		User user = createValidUser();
 
 		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.empty());
-		when(userRepository.existsByEmail(anyString())).thenReturn(Mono.error(new RuntimeException("Database connection " +
-		 "error")));
+		when(userRepository.existsByEmail(anyString())).thenReturn(Mono.error(new RuntimeException(ExceptionMessages.DATABASE_ERROR)));
 
 		Mono<User> result = userUseCase.save(user);
 
@@ -118,8 +102,6 @@ class UserUseCaseTest {
 
 		when(userValidator.validateUser(any(User.class))).thenReturn(Mono.empty());
 		when(userRepository.existsByEmail(anyString())).thenReturn(Mono.just(false));
-		when(userRepository.existsByDocumentNumber(anyString())).thenReturn(Mono.error(new RuntimeException("Database " +
-		 "error")));
 
 		Mono<User> result = userUseCase.save(user);
 

@@ -1,9 +1,11 @@
 package com.crediya.api;
 
-import com.crediya.api.config.UserPaths;
+import com.crediya.api.constants.UserPaths;
 import com.crediya.api.dto.SaveUserDTO;
 import com.crediya.api.mapper.IUserMapper;
 import com.crediya.model.user.User;
+import com.crediya.model.user.constants.ValidationMessages;
+import com.crediya.model.user.exceptions.ExceptionMessages;
 import com.crediya.model.user.exceptions.ValidationException;
 import com.crediya.usecase.user.UserUseCase;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -26,9 +27,8 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class, UserPaths.class})
+@ContextConfiguration(classes = {RouterRest.class, Handler.class})
 @WebFluxTest
-@TestPropertySource(properties = {"routes.paths.user=/api/v1/users"})
 class RouterRestTest {
 
 	@Autowired
@@ -64,7 +64,7 @@ class RouterRestTest {
 		when(userMapper.toModel(any(SaveUserDTO.class))).thenReturn(user);
 		when(userUseCase.save(any(User.class))).thenReturn(Mono.just(savedUser));
 
-		webTestClient.post().uri("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+		webTestClient.post().uri(UserPaths.USERS).contentType(MediaType.APPLICATION_JSON)
 		 .bodyValue(objectMapper.writeValueAsString(saveUserDTO)).exchange().expectStatus().isCreated();
 	}
 
@@ -79,9 +79,9 @@ class RouterRestTest {
 		 .build();
 
 		when(userMapper.toModel(any(SaveUserDTO.class))).thenReturn(user);
-		when(userUseCase.save(any(User.class))).thenReturn(Mono.error(new ValidationException("Name is required")));
+		when(userUseCase.save(any(User.class))).thenReturn(Mono.error(new ValidationException(ValidationMessages.NAME_REQUIRED)));
 
-		webTestClient.post().uri("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+		webTestClient.post().uri(UserPaths.USERS).contentType(MediaType.APPLICATION_JSON)
 		 .bodyValue(objectMapper.writeValueAsString(saveUserDTO)).exchange().expectStatus().isBadRequest();
 	}
 
@@ -97,22 +97,21 @@ class RouterRestTest {
 			.build();
 
 		when(userMapper.toModel(any(SaveUserDTO.class))).thenReturn(user);
-		when(userUseCase.save(any(User.class))).thenReturn(Mono.error(new ValidationException(
-		 "Email is already " + "registered")));
+		when(userUseCase.save(any(User.class))).thenReturn(Mono.error(new ValidationException(ValidationMessages.EMAIL_ALREADY_REGISTERED)));
 
-		webTestClient.post().uri("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+		webTestClient.post().uri(UserPaths.USERS).contentType(MediaType.APPLICATION_JSON)
 		 .bodyValue(objectMapper.writeValueAsString(saveUserDTO)).exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
 	void shouldReturnBadRequestForInvalidJsonBody() {
-		webTestClient.post().uri("/api/v1/users").contentType(MediaType.APPLICATION_JSON).bodyValue("{invalid json}")
+		webTestClient.post().uri(UserPaths.USERS).contentType(MediaType.APPLICATION_JSON).bodyValue("{invalid json}")
 		 .exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
 	void shouldReturnBadRequestForEmptyBody() {
-		webTestClient.post().uri("/api/v1/users").contentType(MediaType.APPLICATION_JSON).bodyValue("").exchange()
+		webTestClient.post().uri(UserPaths.USERS).contentType(MediaType.APPLICATION_JSON).bodyValue("").exchange()
 		 .expectStatus().isBadRequest();
 	}
 
@@ -122,9 +121,9 @@ class RouterRestTest {
 		 new SaveUserDTO("12345678", "John", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
 			"john" + ".doe@example.com", BigDecimal.valueOf(5000000));
 
-		when(userMapper.toModel(any(SaveUserDTO.class))).thenThrow(new RuntimeException("Unexpected error"));
+		when(userMapper.toModel(any(SaveUserDTO.class))).thenThrow(new RuntimeException(ExceptionMessages.UNEXPECTED_ERROR));
 
-		webTestClient.post().uri("/api/v1/users").contentType(MediaType.APPLICATION_JSON)
+		webTestClient.post().uri(UserPaths.USERS).contentType(MediaType.APPLICATION_JSON)
 		 .bodyValue(objectMapper.writeValueAsString(saveUserDTO)).exchange().expectStatus().is5xxServerError();
 	}
 }

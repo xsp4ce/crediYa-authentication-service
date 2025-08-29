@@ -2,6 +2,7 @@ package com.crediya.api.config;
 
 import com.crediya.api.Handler;
 import com.crediya.api.RouterRest;
+import com.crediya.api.constants.UserPaths;
 import com.crediya.api.dto.SaveUserDTO;
 import com.crediya.api.mapper.IUserMapper;
 import com.crediya.model.user.User;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -23,10 +23,9 @@ import java.time.LocalDate;
 
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {RouterRest.class, Handler.class, UserPaths.class})
+@ContextConfiguration(classes = {RouterRest.class, Handler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
-@TestPropertySource(properties = {"routes.paths.user=/api/v1/users"})
 class ConfigTest {
 
 	@Autowired
@@ -52,7 +51,7 @@ class ConfigTest {
 
 	@Test
 	void corsConfigurationShouldAllowOrigins() {
-		webTestClient.post().uri("/api/v1/users").contentType(MediaType.APPLICATION_JSON).bodyValue(saveUserDTO).exchange()
+		webTestClient.post().uri(UserPaths.USERS).contentType(MediaType.APPLICATION_JSON).bodyValue(saveUserDTO).exchange()
 		 .expectStatus().isCreated().expectHeader()
 		 .valueEquals("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self'; form-action 'self'")
 		 .expectHeader().valueEquals("Strict-Transport-Security", "max-age=31536000;").expectHeader()
