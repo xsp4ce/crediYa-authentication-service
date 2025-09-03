@@ -1,7 +1,6 @@
 package com.crediya.model.user.exceptions;
 
 public class ExceptionMessages {
-
 	public static final String VALIDATION_ERROR = "VALIDATION_ERROR";
 	public static final String UNEXPECTED_ERROR = "Unexpected error";
 	public static final String DATABASE_ERROR = "Database error";

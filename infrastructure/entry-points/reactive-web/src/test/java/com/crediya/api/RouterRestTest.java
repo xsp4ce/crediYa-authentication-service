@@ -55,7 +55,7 @@ class RouterRestTest {
 			"john" + ".doe@example.com", BigDecimal.valueOf(5000000));
 
 		User user =
-		 User.builder().documentNumber("12345678").name("John").lastName("Doe").birthDate(LocalDate.of(1990, 1, 1))
+		 User.builder().documentNumber("12345678").firstName("John").lastName("Doe").birthDate(LocalDate.of(1990, 1, 1))
 			.address("123 Main St").phone("1234567890").email("john.doe@example.com").baseSalary(BigDecimal.valueOf(5000000))
 			.build();
 
@@ -74,7 +74,7 @@ class RouterRestTest {
 		 new SaveUserDTO("12345678", "", "Doe", LocalDate.of(1990, 1, 1), "123 Main St", "1234567890",
 			"john.doe@example" + ".com", BigDecimal.valueOf(5000000));
 
-		User user = User.builder().documentNumber("12345678").name("").lastName("Doe").birthDate(LocalDate.of(1990, 1, 1))
+		User user = User.builder().documentNumber("12345678").firstName("").lastName("Doe").birthDate(LocalDate.of(1990, 1, 1))
 		 .address("123 Main St").phone("1234567890").email("john.doe@example.com").baseSalary(BigDecimal.valueOf(5000000))
 		 .build();
 
@@ -92,7 +92,7 @@ class RouterRestTest {
 			"existing" + "@example.com", BigDecimal.valueOf(5000000));
 
 		User user =
-		 User.builder().documentNumber("12345678").name("John").lastName("Doe").birthDate(LocalDate.of(1990, 1, 1))
+		 User.builder().documentNumber("12345678").firstName("John").lastName("Doe").birthDate(LocalDate.of(1990, 1, 1))
 			.address("123 Main St").phone("1234567890").email("existing@example.com").baseSalary(BigDecimal.valueOf(5000000))
 			.build();
 

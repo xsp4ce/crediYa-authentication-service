@@ -8,30 +8,34 @@ class ValidationExceptionTest {
 
 	@Test
 	void shouldCreateExceptionWithMessage() {
-		String message = "Test validation error";
+		String message = "Validation failed";
 		ValidationException exception = new ValidationException(message);
 
 		assertEquals(message, exception.getMessage());
-		assertNull(exception.getCause());
-	}
-
-	@Test
-	void shouldCreateExceptionWithMessageAndCause() {
-		String message = "Test validation error";
-		ValidationException exception = new ValidationException(message);
-
-		assertEquals(message, exception.getMessage());
-	}
-
-	@Test
-	void shouldBeRuntimeException() {
-		ValidationException exception = new ValidationException("test");
-		assertTrue(exception instanceof RuntimeException);
 	}
 
 	@Test
 	void shouldCreateExceptionWithNullMessage() {
 		ValidationException exception = new ValidationException(null);
+
 		assertNull(exception.getMessage());
+	}
+
+	@Test
+	void shouldBeRuntimeException() {
+		ValidationException exception = new ValidationException("test");
+
+		assertTrue(exception instanceof RuntimeException);
+	}
+
+	@Test
+	void shouldBeThrownAndCaught() {
+		String message = "Test validation error";
+
+		ValidationException thrown = assertThrows(ValidationException.class, () -> {
+			throw new ValidationException(message);
+		});
+
+		assertEquals(message, thrown.getMessage());
 	}
 }

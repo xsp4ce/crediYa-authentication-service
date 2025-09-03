@@ -37,7 +37,7 @@ class ConfigTest {
 	@MockitoBean
 	private IUserMapper userMapper;
 
-	private final User user = User.builder().id(1L).documentNumber("12345678").name("John").lastName("Doe").build();
+	private final User user = User.builder().id(1L).documentNumber("12345678").firstName("John").lastName("Doe").build();
 
 	private final SaveUserDTO saveUserDTO =
 	 new SaveUserDTO("12345678", "John", "Doe", LocalDate.of(1990, 5, 15), "Calle 123 #45-67, Bogotá", "3001234567",

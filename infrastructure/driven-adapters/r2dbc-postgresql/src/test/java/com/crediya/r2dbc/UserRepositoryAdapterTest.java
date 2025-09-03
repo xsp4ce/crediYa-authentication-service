@@ -122,7 +122,7 @@ class UserRepositoryAdapterTest {
 	}
 
 	private User createUser() {
-		return User.builder().id(1L).documentNumber("12345678").name("John").lastName("Doe")
+		return User.builder().id(1L).documentNumber("12345678").firstName("John").lastName("Doe")
 		 .birthDate(LocalDate.of(1990, 1, 1)).address("123 Main St").phone("1234567890").email("john.doe@example.com")
 		 .baseSalary(BigDecimal.valueOf(5000000)).build();
 	}

@@ -1,4 +1,5 @@
 package com.crediya.model.user;
+
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,11 +17,13 @@ import java.time.LocalDate;
 public class User {
 	private Long id;
 	private String documentNumber;
-	private String name;
+	private String firstName;
 	private String lastName;
 	private LocalDate birthDate;
 	private String address;
 	private String phone;
 	private String email;
+	private String password;
+	private Long roleId;
 	private BigDecimal baseSalary;
 }

@@ -8,4 +8,7 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0'
     implementation 'org.springdoc:springdoc-openapi-starter-common:2.3.0'
+    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'org.springframework:spring-aop'
+    implementation 'org.aspectj:aspectjweaver'
 }

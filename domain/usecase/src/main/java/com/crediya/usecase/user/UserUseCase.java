@@ -1,21 +1,43 @@
 package com.crediya.usecase.user;
 
+import com.crediya.model.command.CommandValidator;
+import com.crediya.model.command.ValidateDocumentCommand;
+import com.crediya.model.role.RoleEnum;
 import com.crediya.model.user.User;
 import com.crediya.model.user.UserValidator;
 import com.crediya.model.user.constants.ValidationMessages;
+import com.crediya.model.user.exceptions.BusinessException;
 import com.crediya.model.user.exceptions.ValidationException;
 import com.crediya.model.user.gateways.UserRepository;
 import reactor.core.publisher.Mono;
 
-public record UserUseCase(UserRepository userRepository, UserValidator userValidator) {
+public record UserUseCase(UserRepository userRepository, UserValidator userValidator,
+													CommandValidator commandValidator) {
+
 	public Mono<User> save(User user) {
-		return userValidator.validateUser(user).then(Mono.defer(() -> validateUniqueConstraints(user)))
-		 .then(Mono.defer(() -> userRepository.save(user)));
+		return userValidator
+		 .validateUser(user)
+		 .then(validateUniqueConstraints(user))
+		 .then(Mono.fromSupplier(() -> {
+			 user.setRoleId(RoleEnum.CUSTOMER.getId());
+			 return user;
+		 }))
+		 .flatMap(userRepository::save)
+		 .onErrorMap(e -> new BusinessException(e.getMessage()));
+	}
+
+	public Mono<Boolean> validateDocument(ValidateDocumentCommand cmd) {
+		return commandValidator
+		 .validate(cmd)
+		 .then(userRepository.findByDocumentNumber(cmd.documentNumber()))
+		 .map(user -> user.getId().equals(cmd.idUser())).defaultIfEmpty(false)
+		 .onErrorMap(e -> new BusinessException(e.getMessage()));
 	}
 
 	private Mono<Void> validateUniqueConstraints(User user) {
-		return Mono.defer(() -> Mono.when(userRepository.existsByEmail(user.getEmail())
-		 .flatMap(exists -> Boolean.TRUE.equals(exists) ?
-			Mono.error(new ValidationException(ValidationMessages.EMAIL_ALREADY_REGISTERED)) : Mono.empty())));
+		return userRepository
+		 .findByEmail(user.getEmail())
+		 .flatMap(existingUser -> Mono.error(new ValidationException(ValidationMessages.EMAIL_ALREADY_EXISTS))).then()
+		 .onErrorMap(e -> new BusinessException(e.getMessage()));
 	}
 }

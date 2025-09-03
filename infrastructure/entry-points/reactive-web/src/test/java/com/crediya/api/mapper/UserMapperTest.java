@@ -27,7 +27,7 @@ class UserMapperTest {
 
 		assertThat(user).isNotNull();
 		assertThat(user.getDocumentNumber()).isEqualTo("12345678");
-		assertThat(user.getName()).isEqualTo("John");
+		assertThat(user.getFirstName()).isEqualTo("John");
 		assertThat(user.getLastName()).isEqualTo("Doe");
 		assertThat(user.getBirthDate()).isEqualTo(LocalDate.of(1990, 5, 15));
 		assertThat(user.getAddress()).isEqualTo("Calle 123 #45-67, Bogotá");
@@ -45,7 +45,7 @@ class UserMapperTest {
 
 		assertThat(user).isNotNull();
 		assertThat(user.getDocumentNumber()).isNull();
-		assertThat(user.getName()).isNull();
+		assertThat(user.getFirstName()).isNull();
 		assertThat(user.getLastName()).isNull();
 		assertThat(user.getBirthDate()).isNull();
 		assertThat(user.getAddress()).isNull();
@@ -65,7 +65,7 @@ class UserMapperTest {
 
 		assertThat(user).isNotNull();
 		assertThat(user.getDocumentNumber()).isEqualTo("87654321");
-		assertThat(user.getName()).isEqualTo("Jane");
+		assertThat(user.getFirstName()).isEqualTo("Jane");
 		assertThat(user.getLastName()).isEqualTo("Smith");
 		assertThat(user.getBirthDate()).isEqualTo(LocalDate.of(1985, 12, 25));
 		assertThat(user.getAddress()).isEqualTo("Main St 456");
@@ -82,13 +82,13 @@ class UserMapperTest {
 		User user = userMapper.toModel(saveUserDTO);
 
 		assertThat(user).isNotNull();
-		assertThat(user.getDocumentNumber()).isEqualTo("");
-		assertThat(user.getName()).isEqualTo("");
-		assertThat(user.getLastName()).isEqualTo("");
+		assertThat(user.getDocumentNumber()).isEmpty();
+		assertThat(user.getFirstName()).isEmpty();
+		assertThat(user.getLastName()).isEmpty();
 		assertThat(user.getBirthDate()).isEqualTo(LocalDate.of(2000, 1, 1));
-		assertThat(user.getAddress()).isEqualTo("");
-		assertThat(user.getPhone()).isEqualTo("");
-		assertThat(user.getEmail()).isEqualTo("");
+		assertThat(user.getAddress()).isEmpty();
+		assertThat(user.getPhone()).isEmpty();
+		assertThat(user.getEmail()).isEmpty();
 		assertThat(user.getBaseSalary()).isEqualTo(BigDecimal.ZERO);
 		assertThat(user.getId()).isNull();
 	}
@@ -103,7 +103,7 @@ class UserMapperTest {
 
 		assertThat(user).isNotNull();
 		assertThat(user.getDocumentNumber()).isEqualTo("12345678");
-		assertThat(user.getName()).isEqualTo("José María");
+		assertThat(user.getFirstName()).isEqualTo("José María");
 		assertThat(user.getLastName()).isEqualTo("González-Pérez");
 		assertThat(user.getBirthDate()).isEqualTo(LocalDate.of(1992, 3, 8));
 		assertThat(user.getAddress()).isEqualTo("Carrera 7 #32-16, Apt. 501");

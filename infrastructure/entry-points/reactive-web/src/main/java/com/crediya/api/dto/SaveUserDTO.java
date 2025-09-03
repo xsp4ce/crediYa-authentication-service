@@ -12,9 +12,9 @@ public record SaveUserDTO(
  @Schema(description = "User's first name", example = "John", minLength = 1, maxLength = 50)
  @NotBlank(message = ValidationMessages.NAME_REQUIRED)
  @Size(max = 50, message = ValidationMessages.NAME_MAX_LENGTH)
- String name,
+ String firstName,
 
- @Schema(description = "User's last name", example = "Doe", minLength = 1, maxLength = 50)
+ @Schema(description = "User's last last name", example = "Doe", minLength = 1, maxLength = 50)
  @NotBlank(message = ValidationMessages.LAST_NAME_REQUIRED)
  @Size(max = 50, message = ValidationMessages.LAST_NAME_MAX_LENGTH)
  String lastName,
@@ -39,5 +39,10 @@ public record SaveUserDTO(
  BigDecimal baseSalary,
 
  @Schema(description = "User's document number", example = "12345678")
- String documentNumber
+ String documentNumber,
+
+ @Schema(description = "User's password", example = "SecurePassword123!", minLength = 8)
+ @NotBlank(message = ValidationMessages.PASSWORD_REQUIRED)
+ @Size(min = 8, message = ValidationMessages.PASSWORD_MIN_LENGTH)
+ String password
 ) {}
