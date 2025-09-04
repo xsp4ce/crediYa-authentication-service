@@ -132,44 +132,45 @@ class UserUseCaseTest {
 	}
 
 	@Test
-	void shouldValidateDocumentSuccessfullyWhenUserExists() {
-		User foundUser = User.builder().id(1L).documentNumber("12345678").build();
+	void shouldValidateDocumentSuccessfullyAndReturnEmailWhenUserExists() {
+		User foundUser = User.builder().id(1L).documentNumber("12345678").email("john.doe@example.com").build();
 
 		when(commandValidator.validate(validCommand)).thenReturn(Mono.just(validCommand));
 		when(userRepository.findByDocumentNumber("12345678")).thenReturn(Mono.just(foundUser));
 
-		Mono<Boolean> result = userUseCase.validateDocument(validCommand);
+		Mono<String> result = userUseCase.validateDocument(validCommand);
 
-		StepVerifier.create(result).expectNext(true).verifyComplete();
+		StepVerifier.create(result).expectNext("john.doe@example.com").verifyComplete();
 
 		verify(commandValidator).validate(validCommand);
 		verify(userRepository).findByDocumentNumber("12345678");
 	}
 
 	@Test
-	void shouldReturnFalseWhenUserExistsButIdDoesNotMatch() {
-		User foundUser = User.builder().id(2L) // Different ID
-		 .documentNumber("12345678").build();
+	void shouldFailWhenUserExistsButIdDoesNotMatch() {
+		User foundUser = User.builder().id(2L).documentNumber("12345678").email("jane.doe@example.com").build();
 
 		when(commandValidator.validate(validCommand)).thenReturn(Mono.just(validCommand));
 		when(userRepository.findByDocumentNumber("12345678")).thenReturn(Mono.just(foundUser));
 
-		Mono<Boolean> result = userUseCase.validateDocument(validCommand);
+		Mono<String> result = userUseCase.validateDocument(validCommand);
 
-		StepVerifier.create(result).expectNext(false).verifyComplete();
+		StepVerifier.create(result).expectErrorMatches(throwable -> throwable instanceof BusinessException &&
+		 throwable.getMessage().equals("Document validation failed")).verify();
 
 		verify(commandValidator).validate(validCommand);
 		verify(userRepository).findByDocumentNumber("12345678");
 	}
 
 	@Test
-	void shouldReturnFalseWhenUserNotFound() {
+	void shouldFailWhenUserNotFound() {
 		when(commandValidator.validate(validCommand)).thenReturn(Mono.just(validCommand));
 		when(userRepository.findByDocumentNumber("12345678")).thenReturn(Mono.empty());
 
-		Mono<Boolean> result = userUseCase.validateDocument(validCommand);
+		Mono<String> result = userUseCase.validateDocument(validCommand);
 
-		StepVerifier.create(result).expectNext(false).verifyComplete();
+		StepVerifier.create(result).expectErrorMatches(throwable -> throwable instanceof BusinessException &&
+		 throwable.getMessage().equals("Document validation failed")).verify();
 
 		verify(commandValidator).validate(validCommand);
 		verify(userRepository).findByDocumentNumber("12345678");
@@ -182,7 +183,7 @@ class UserUseCaseTest {
 		when(commandValidator.validate(validCommand)).thenReturn(Mono.just(validCommand));
 		when(userRepository.findByDocumentNumber("12345678")).thenReturn(Mono.error(repositoryError));
 
-		Mono<Boolean> result = userUseCase.validateDocument(validCommand);
+		Mono<String> result = userUseCase.validateDocument(validCommand);
 
 		StepVerifier.create(result).expectErrorMatches(throwable -> throwable instanceof BusinessException &&
 		 throwable.getMessage().equals("Database query failed")).verify();
@@ -195,20 +196,19 @@ class UserUseCaseTest {
 		ValidateDocumentCommand command1 = new ValidateDocumentCommand("11111111", 1L);
 		ValidateDocumentCommand command2 = new ValidateDocumentCommand("22222222", 2L);
 
-		User user1 = User.builder().id(1L).documentNumber("11111111").build();
-		User user2 = User.builder().id(2L).documentNumber("22222222").build();
+		User user1 = User.builder().id(1L).documentNumber("11111111").email("user1@example.com").build();
+		User user2 = User.builder().id(2L).documentNumber("22222222").email("user2@example.com").build();
 
 		when(commandValidator.validate(command1)).thenReturn(Mono.just(command1));
 		when(commandValidator.validate(command2)).thenReturn(Mono.just(command2));
 		when(userRepository.findByDocumentNumber("11111111")).thenReturn(Mono.just(user1));
 		when(userRepository.findByDocumentNumber("22222222")).thenReturn(Mono.just(user2));
 
-		Mono<Boolean> result1 = userUseCase.validateDocument(command1);
-		Mono<Boolean> result2 = userUseCase.validateDocument(command2);
+		Mono<String> result1 = userUseCase.validateDocument(command1);
+		Mono<String> result2 = userUseCase.validateDocument(command2);
 
-		StepVerifier.create(result1).expectNext(true).verifyComplete();
-
-		StepVerifier.create(result2).expectNext(true).verifyComplete();
+		StepVerifier.create(result1).expectNext("user1@example.com").verifyComplete();
+		StepVerifier.create(result2).expectNext("user2@example.com").verifyComplete();
 	}
 
 	@Test

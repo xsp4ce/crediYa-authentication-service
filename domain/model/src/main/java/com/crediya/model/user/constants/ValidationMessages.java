@@ -12,6 +12,7 @@ public final class ValidationMessages {
 	public static final String USER_NOT_FOUND = "User not found";
 	public static final String DOCUMENT_NUMBER_REQUIRED = "Document number is required";
 	public static final String DOCUMENT_MIN_LENGTH = "Document must be 8 characters";
+	public static final String DOCUMENT_VALIDATION_FAILED = "Document validation failed";
 	public static final String ID_USER_REQUIRED = "User ID is required";
 
 	public static final String NAME_REQUIRED = "Name is required";

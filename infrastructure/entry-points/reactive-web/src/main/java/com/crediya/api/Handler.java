@@ -9,6 +9,7 @@ import com.crediya.api.mapper.IUserMapper;
 import com.crediya.api.security.RequireRole;
 import com.crediya.model.role.RoleConstants;
 import com.crediya.model.user.constants.LogMessages;
+import com.crediya.model.user.exceptions.BusinessException;
 import com.crediya.model.user.exceptions.ExceptionMessages;
 import com.crediya.model.user.exceptions.ValidationException;
 import com.crediya.usecase.login.LoginUserUseCase;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @Log4j2
 @Component
@@ -48,10 +51,12 @@ public class Handler {
 		 .bodyToMono(ValidateDocumentDTO.class)
 		 .map(userMapper::toCommand)
 		 .flatMap(userUseCase::validateDocument)
-		 .flatMap(isValid -> Boolean.TRUE.equals(isValid)
-			? ServerResponse.ok().build()
-			: ServerResponse.status(HttpStatus.CONFLICT).build()
-		 );
+		 .flatMap(email ->
+			ServerResponse.ok()
+			 .contentType(MediaType.APPLICATION_JSON)
+			 .bodyValue(Map.of("email", email))
+		 )
+		 .onErrorResume(BusinessException.class, ex -> ServerResponse.status(HttpStatus.CONFLICT).build());
 	}
 
 	public Mono<ServerResponse> listenLoginUser(ServerRequest request) {

@@ -26,11 +26,13 @@ public record UserUseCase(UserRepository userRepository, UserValidator userValid
 		 .onErrorMap(e -> new BusinessException(e.getMessage()));
 	}
 
-	public Mono<Boolean> validateDocument(ValidateDocumentCommand cmd) {
+	public Mono<String> validateDocument(ValidateDocumentCommand cmd) {
 		return commandValidator
 		 .validate(cmd)
 		 .then(userRepository.findByDocumentNumber(cmd.documentNumber()))
-		 .map(user -> user.getId().equals(cmd.idUser())).defaultIfEmpty(false)
+		 .filter(user -> user.getId().equals(cmd.idUser()))
+		 .map(User::getEmail)
+		 .switchIfEmpty(Mono.error(new BusinessException(ValidationMessages.DOCUMENT_VALIDATION_FAILED)))
 		 .onErrorMap(e -> new BusinessException(e.getMessage()));
 	}
 
