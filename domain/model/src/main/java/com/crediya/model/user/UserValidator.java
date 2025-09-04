@@ -20,7 +20,7 @@ public class UserValidator {
 	}
 
 	private void validateRequiredFields(User user) {
-		if (isNullOrEmpty(user.getName())) {
+		if (isNullOrEmpty(user.getFirstName())) {
 			throw new ValidationException(ValidationMessages.NAME_REQUIRED);
 		}
 		if (isNullOrEmpty(user.getLastName())) {
@@ -28,6 +28,9 @@ public class UserValidator {
 		}
 		if (isNullOrEmpty(user.getEmail())) {
 			throw new ValidationException(ValidationMessages.EMAIL_REQUIRED);
+		}
+		if (isNullOrEmpty(user.getPassword())) {
+			throw new ValidationException(ValidationMessages.PASSWORD_REQUIRED);
 		}
 		if (user.getBaseSalary() == null) {
 			throw new ValidationException(ValidationMessages.BASE_SALARY_REQUIRED);

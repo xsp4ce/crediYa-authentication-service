@@ -6,6 +6,14 @@ public final class ValidationMessages {
 	public static final String EMAIL_CANNOT_BE_NULL = "Email cannot be null";
 	public static final String SALARY_OUT_OF_RANGE = "Salary must be between 0 and 15,000,000";
 	public static final String USER_CANNOT_BE_NULL = "User cannot be null";
+	public static final String PASSWORD_REQUIRED = "Password is required";
+	public static final String PASSWORD_MIN_LENGTH = "Password must be at least 8 characters long";
+	public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
+	public static final String USER_NOT_FOUND = "User not found";
+	public static final String DOCUMENT_NUMBER_REQUIRED = "Document number is required";
+	public static final String DOCUMENT_MIN_LENGTH = "Document must be 8 characters";
+	public static final String DOCUMENT_VALIDATION_FAILED = "Document validation failed";
+	public static final String ID_USER_REQUIRED = "User ID is required";
 
 	public static final String NAME_REQUIRED = "Name is required";
 	public static final String NAME_MAX_LENGTH = "Name must not exceed 50 characters";

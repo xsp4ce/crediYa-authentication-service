@@ -1,5 +1,7 @@
 package com.crediya.config;
 
+import com.crediya.model.command.CommandValidator;
+import com.crediya.model.login.LoginUserValidator;
 import com.crediya.model.user.UserValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,5 +15,15 @@ public class UseCasesConfig {
 	@Bean
 	public UserValidator userValidator() {
 		return new UserValidator();
+	}
+
+	@Bean
+	public LoginUserValidator loginUserValidator() {
+		return new LoginUserValidator();
+	}
+
+	@Bean
+	public CommandValidator commandValidator() {
+		return new CommandValidator();
 	}
 }
